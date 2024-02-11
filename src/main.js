@@ -1,3 +1,10 @@
+/*
+Name: Rayan Hirech
+Game Title:
+Hours Spent:
+Creative Tilt:
+*/
+
 let config = {
     type: Phaser.AUTO,
     width: 640,
