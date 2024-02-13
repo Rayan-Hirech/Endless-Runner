@@ -9,10 +9,16 @@ class Menu extends Phaser.Scene {
 
         // Load spritesheets.
         this.load.spritesheet('egg', './assets/spritesheets/egg.png', {
-            frameWidth: 14,
-            frameHeight: 16,
+            frameWidth: 16,
+            frameHeight: 18,
             startFrame: 0,
             endFrame: 3
+        });
+        this.load.spritesheet('charge', './assets/spritesheets/charge.png', {
+            frameWidth: 16,
+            frameHeight: 18,
+            startFrame: 0,
+            endFrame: 7
         });
     }
 

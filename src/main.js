@@ -17,7 +17,13 @@ let config = {
 
 let game = new Phaser.Game(config);
 
+// Reserve key bindings.
+let keyUP, keyDOWN;
+
 // Configure play scene.
 let eggPadding = 10;
-let baseEggFrameRate = 5;
+let startingHeight = 9/16;
+let chargeTime = 2;
 let baseMoveSpeed = 0.4;
+let baseEggFrameRate = 5;
+let baseChargeFrameRate = 7;
