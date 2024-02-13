@@ -8,7 +8,10 @@ Creative Tilt:
 let config = {
     type: Phaser.AUTO,
     width: 640,
-    height: 480,
+    height: 640,
+    render: {
+        pixelArt: true
+    },
     scene: [Play]
 }
 
