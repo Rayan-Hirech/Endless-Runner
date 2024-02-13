@@ -4,7 +4,8 @@ class Menu extends Phaser.Scene {
     }
 
     preload() {
-        
+        // Load tile sprites.
+        this.load.image('table', './assets/tilesprites/table.png');
     }
 
     create() {
