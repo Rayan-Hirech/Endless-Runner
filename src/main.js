@@ -1,7 +1,7 @@
 /*
 Name: Rayan Hirech
 Game Title:
-Hours Spent:
+Hours Spent: 1
 Creative Tilt:
 */
 
