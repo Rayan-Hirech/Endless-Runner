@@ -73,10 +73,6 @@ class Play extends Phaser.Scene {
         // Place background table tile sprite.
         this.table = this.add.tileSprite(0, 0, 2560, 2560, 'table').setOrigin(0.5, 0.5);
 
-        // Add player egg.
-        this.p1Egg = this.physics.add.sprite(this.eggPadding, game.config.height * this.startingHeight, 'egg').setOrigin(0, 0).setScale(4);
-        this.eggCharge = this.add.sprite(this.eggPadding, game.config.height * this.startingHeight, 'charge').setOrigin(0, 0).setScale(4);
-
         // Define keys.
         keyUP = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
         keyDOWN = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
@@ -89,6 +85,14 @@ class Play extends Phaser.Scene {
         this.tpDirection = 'none';
         this.chargeMeter = 0;
         this.teleportTimer = 0;
+
+        // Create obstacles.
+        this.mug01 = new Obstacle(this, this.startingHeight * game.config.width, 0, 'mug', 0, this.baseMoveSpeed/* / 48*/, this.minHeight * game.config.width, this.maxHeight * game.config.width).setOrigin(0, 0).setScale(4);
+        this.mug01.setStartingPosition(this.startingHeight * game.config.width);
+
+        // Add player egg.
+        this.p1Egg = this.physics.add.sprite(this.eggPadding, game.config.height * this.startingHeight, 'egg').setOrigin(0, 0).setScale(4);
+        this.eggCharge = this.add.sprite(this.eggPadding, game.config.height * this.startingHeight, 'charge').setOrigin(0, 0).setScale(4);
     }
 
     update(time, delta) {
@@ -103,6 +107,9 @@ class Play extends Phaser.Scene {
 
         // Teleportat the egg.
         this.teleportEgg(delta);
+
+        // Move the obstacles.
+        this.mug01.update(time, delta);
     }
 
     // Handles teleportation, charging, and animation.
@@ -159,7 +166,6 @@ class Play extends Phaser.Scene {
             this.eggCharge.setFrame(currentFrame);
             if (!this.hasTeleported && currentFrame == 11) {
                 this.hasTeleported = true;
-                console.log(`yoop (${this.chargeMeter}) : ${this.getNewPosition(this.p1Egg.y, this.chargeMeter, this.tpDirection)}`);
                 this.p1Egg.y = this.getNewPosition(this.p1Egg.y, this.chargeMeter, this.tpDirection);
                 this.eggCharge.y = this.getNewPosition(this.eggCharge.y, this.chargeMeter, this.tpDirection);
                 this.tpDirection = 'none';
