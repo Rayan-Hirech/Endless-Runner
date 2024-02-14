@@ -39,6 +39,14 @@ class Play extends Phaser.Scene {
                 end: 7
             })
         });
+        this.anims.create({
+            key: 'teleport',
+            repeat: 0,
+            frames: this.anims.generateFrameNumbers('charge', {
+                start: 8,
+                end: 11
+            }),
+        });
     }
 
     create() {
@@ -55,8 +63,12 @@ class Play extends Phaser.Scene {
 
         // Set up variables.
         this.chargingTeleport = false;
+        this.isTeleporting = false;
+        this.hasTeleported = false;
         this.coolingDown = false;
+        this.tpDirection = 'none';
         this.chargeMeter = 0;
+        this.teleportTimer = 0;
     }
 
     update(time, delta) {
@@ -69,18 +81,32 @@ class Play extends Phaser.Scene {
             this.eggCharge.play('unchargedIdle', true);
         }
 
-        if (!this.chargingTeleport && !this.coolingDown && Phaser.Input.Keyboard.JustDown(keyUP)) {
+        // Teleportat the egg.
+        this.teleportEgg(delta);
+    }
+
+    // Handles teleportation, charging, and animation.
+    teleportEgg(delta) {
+        if (!this.chargingTeleport && !this.isTeleporting && !this.coolingDown && Phaser.Input.Keyboard.JustDown(keyUP)) {
             this.chargingTeleport = true;
-        } else if (!this.chargingTeleport && !this.coolingDown && Phaser.Input.Keyboard.JustDown(keyDOWN)) {
+            this.tpDirection = 'up';
+        } else if (!this.chargingTeleport && !this.isTeleporting && !this.coolingDown && Phaser.Input.Keyboard.JustDown(keyDOWN)) {
             this.chargingTeleport = true;
+            this.tpDirection = 'down';
         }
 
-        if (this.chargingTeleport && Phaser.Input.Keyboard.JustUp(keyUP)) {
+        if (this.chargingTeleport && Phaser.Input.Keyboard.JustUp(keyUP) && this.tpDirection == 'up') {
             this.chargingTeleport = false;
-            this.coolingDown = true;
-        } else if (this.chargingTeleport && Phaser.Input.Keyboard.JustUp(keyDOWN)) {
+            this.eggCharge.setFrame(8);
+            this.isTeleporting = true;
+            this.hasTeleported = false;
+            this.teleportTimer = tpTime;
+        } else if (this.chargingTeleport && Phaser.Input.Keyboard.JustUp(keyDOWN) && this.tpDirection == 'down') {
             this.chargingTeleport = false;
-            this.coolingDown = true;
+            this.eggCharge.setFrame(8);
+            this.isTeleporting = true;
+            this.hasTeleported = false;
+            this.teleportTimer = tpTime;
         }
 
         if (this.chargingTeleport && this.chargeMeter == 100) {
@@ -99,12 +125,47 @@ class Play extends Phaser.Scene {
             this.eggCharge.setFrame(currentFrame);
         }
         if (this.coolingDown && this.chargeMeter > 0) {
-            this.chargeMeter -= (delta / (chargeTime * 500)) * 100;
+            this.chargeMeter -= (delta / (chargeTime * 250)) * 100; //TODO
             if (this.chargeMeter <= 0) {
                 this.chargeMeter = 0;
             }
             let currentFrame = Math.ceil((this.chargeMeter / 100) * 7);
             this.eggCharge.setFrame(currentFrame);
         }
+        if (this.isTeleporting) {
+            this.teleportTimer -= (delta / 1000);
+            let frameOffset = Math.abs((((tpTime / 2) - this.teleportTimer) / (tpTime / 2)) * 4);
+            let currentFrame = Math.ceil(11 - frameOffset);
+            this.eggCharge.setFrame(currentFrame);
+            if (!this.hasTeleported && currentFrame == 11) {
+                this.hasTeleported = true;
+                console.log(`yoop (${this.chargeMeter}) : ${this.getNewPosition(this.p1Egg.y, this.chargeMeter, this.tpDirection)}`);
+                this.p1Egg.y = this.getNewPosition(this.p1Egg.y, this.chargeMeter, this.tpDirection);
+                this.eggCharge.y = this.getNewPosition(this.eggCharge.y, this.chargeMeter, this.tpDirection);
+                this.tpDirection = 'none';
+            }
+            if (this.teleportTimer <= 0) {
+                this.isTeleporting = false;
+                this.coolingDown = true;
+            }
+        }
+    }
+
+    getNewPosition(currentY, charge, direction) {
+        let finalY = currentY;
+        let maxDistance = maxHeight - minHeight;
+        let tpDistance = maxDistance * charge / 100;
+        if (direction == 'up') {
+            finalY -= tpDistance * game.config.height;
+            if (finalY < (minHeight * game.config.height)) {
+                finalY = minHeight * game.config.height;
+            }
+        } else if (direction == 'down') {
+            finalY += tpDistance * game.config.height;
+            if (finalY > (maxHeight * game.config.height)) {
+                finalY = maxHeight * game.config.height;
+            }
+        }
+        return finalY;
     }
 }

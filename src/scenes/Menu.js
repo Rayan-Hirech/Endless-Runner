@@ -18,8 +18,14 @@ class Menu extends Phaser.Scene {
             frameWidth: 16,
             frameHeight: 18,
             startFrame: 0,
-            endFrame: 7
+            endFrame: 11
         });
+        /*this.load.spritesheet('teleport', './assets/spritesheets/teleport.png', {
+            frameWidth: 16,
+            frameHeight: 18,
+            startFrame: 0,
+            endFrame: 3
+        });*/
     }
 
     create() {

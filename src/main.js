@@ -1,7 +1,7 @@
 /*
 Name: Rayan Hirech
 Game Title (Working Title): Teleporting Egg
-Hours Spent: 7
+Hours Spent: 10
 Creative Tilt:
 */
 
@@ -21,9 +21,11 @@ let game = new Phaser.Game(config);
 let keyUP, keyDOWN;
 
 // Configure play scene.
-let eggPadding = 10;
-let startingHeight = 9/16;
-let chargeTime = 2;
-let baseMoveSpeed = 0.4;
-let baseEggFrameRate = 5;
-let baseChargeFrameRate = 7;
+let eggPadding = 10; // Egg distance from left side of the screen.
+let startingHeight = 9/16; // Player starting location (around the middle).
+let minHeight = 1/4; // Highest point the player can be.
+let maxHeight = 7/8; // Lowest point the player can be.
+let chargeTime = 2; // Amount of time (in seconds) to reach max teleport charge (cooling down takes a quarter of the time).
+let tpTime = 0.3; // How long a teleport takes in seconds.
+let baseMoveSpeed = 0.4; // Starting table rotation speed (scales over time).
+let baseEggFrameRate = 5; // Starting egg rolling animation speed (scales over time).
