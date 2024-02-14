@@ -1,7 +1,7 @@
 /*
 Name: Rayan Hirech
 Game Title (Working Title): Teleporting Egg
-Hours Spent: 10
+Hours Spent: 11
 Creative Tilt:
 */
 
@@ -11,6 +11,12 @@ let config = {
     height: 640,
     render: {
         pixelArt: true
+    },
+    physics: {
+        default: 'arcade',
+        arcade: {
+            debug: true
+        }
     },
     scene: [Menu, Play]
 }

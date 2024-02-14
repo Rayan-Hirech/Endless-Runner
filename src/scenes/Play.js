@@ -14,6 +14,14 @@ class Play extends Phaser.Scene {
             })
         });
         this.anims.create({
+            key: 'crack',
+            repeat: -1,
+            frames: this.anims.generateFrameNumbers('egg', {
+                start: 4,
+                end: 4
+            })
+        });
+        this.anims.create({
             key: 'unchargedIdle',
             frameRate: 0,
             repeat: -1,
