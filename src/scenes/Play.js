@@ -153,7 +153,7 @@ class Play extends Phaser.Scene {
 
     getNewPosition(currentY, charge, direction) {
         let finalY = currentY;
-        let maxDistance = maxHeight - minHeight;
+        let maxDistance = (maxHeight - minHeight) * chargeFactor;
         let tpDistance = maxDistance * charge / 100;
         if (direction == 'up') {
             finalY -= tpDistance * game.config.height;
