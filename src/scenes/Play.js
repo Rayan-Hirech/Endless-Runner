@@ -86,15 +86,16 @@ class Play extends Phaser.Scene {
         this.tpDirection = 'none';
         this.chargeMeter = 0;
         this.teleportTimer = 0;
+        this.gameTimer = 0;
 
         // Create obstacles.
-        this.obs01 = new Obstacle(this, this.startingHeight * game.config.width, 0, 'mug', 0, this.baseMoveSpeed, this.minHeight * game.config.width, this.maxHeight * game.config.width).setOrigin(0, 0).setScale(6).setDepth(80);
+        this.obs01 = new Obstacle(this, this.startingHeight * game.config.width, 0, 'mug', 0, this.baseMoveSpeed, this.minHeight * game.config.width, this.maxHeight * game.config.width).setOrigin(0, 0).setScale(6).setDepth(4);
         this.obs01.setStartingPosition(this.startingHeight * game.config.width);
-        this.obs02 = new Obstacle(this, this.minHeight * game.config.width, 0, 'mug', 0, this.baseMoveSpeed, this.minHeight * game.config.width, this.maxHeight * game.config.width).setOrigin(0, 0).setScale(6).setDepth(60);
+        this.obs02 = new Obstacle(this, this.minHeight * game.config.width, 0, 'mug', 0, this.baseMoveSpeed, this.minHeight * game.config.width, this.maxHeight * game.config.width).setOrigin(0, 0).setScale(6).setDepth(3);
         this.obs02.setStartingPosition(this.minHeight * game.config.width, -90);
-        this.obs03 = new Obstacle(this, this.maxHeight * game.config.width, 0, 'mug', 0, this.baseMoveSpeed, this.minHeight * game.config.width, this.maxHeight * game.config.width).setOrigin(0, 0).setScale(6).setDepth(40);
+        this.obs03 = new Obstacle(this, this.maxHeight * game.config.width, 0, 'mug', 0, this.baseMoveSpeed, this.minHeight * game.config.width, this.maxHeight * game.config.width).setOrigin(0, 0).setScale(6).setDepth(2);
         this.obs03.setStartingPosition(this.maxHeight * game.config.width, -60);
-        this.obs04 = new Obstacle(this, this.startingHeight * game.config.width, 0, 'mug', 0, this.baseMoveSpeed, this.minHeight * game.config.width, this.maxHeight * game.config.width).setOrigin(0, 0).setScale(6).setDepth(20);
+        this.obs04 = new Obstacle(this, this.startingHeight * game.config.width, 0, 'mug', 0, this.baseMoveSpeed, this.minHeight * game.config.width, this.maxHeight * game.config.width).setOrigin(0, 0).setScale(6).setDepth(1);
         this.obs04.setStartingPosition(this.startingHeight * game.config.width, -120);
 
         // Add player egg.
@@ -108,6 +109,20 @@ class Play extends Phaser.Scene {
         this.physics.add.collider(this.p1Egg, this.obs03, () => {this.gameOver = true});
         this.physics.add.collider(this.p1Egg, this.obs04, () => {this.gameOver = true});
 
+        // Display timer.
+        let timerConfig = {
+            fontFamily: 'Verdana',
+            fontSize: '28px',
+            backgroundColor: '#553322',
+            color: '#EDD5B5',
+            align: 'left',
+            padding: {
+                top: 5,
+                bottom: 5,
+            },
+            fixedWidth: 100
+        };
+        this.timerDisplay = this.add.text(20, 10, Math.ceil(this.gameTimer / 1000), timerConfig);
     }
 
     update(time, delta) {
@@ -116,10 +131,10 @@ class Play extends Phaser.Scene {
             this.table.angle += this.baseMoveSpeed;
 
             // Move the obstacles.
-            this.obs01.update(time, delta);
-            this.obs02.update(time, delta);
-            this.obs03.update(time, delta);
-            this.obs04.update(time, delta);
+            this.obs01.update(time, delta, this.gameTimer);
+            this.obs02.update(time, delta, this.gameTimer);
+            this.obs03.update(time, delta, this.gameTimer);
+            this.obs04.update(time, delta, this.gameTimer);
 
             // Animate egg rolling.
             this.p1Egg.play({key: 'roll', frameRate: this.baseEggFrameRate}, true);
@@ -129,6 +144,10 @@ class Play extends Phaser.Scene {
 
             // Teleport the egg.
             this.teleportEgg(delta);
+
+            // Update game timer.
+            this.gameTimer += delta;
+            this.timerDisplay.text = Math.ceil(this.gameTimer / 1000);
         } else {
             this.p1Egg.play('crack', false);
             this.eggCharge.setFrame(0);

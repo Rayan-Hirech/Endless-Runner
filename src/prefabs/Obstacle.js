@@ -29,7 +29,7 @@ class Obstacle extends Phaser.GameObjects.Sprite {
         this.delay = 0;
     }
 
-    update(time, delta) {
+    update(time, delta, gameTimer) {
         this.theta += this.rotationSpeed;
         if (this.theta < this.maxAngle) {
             this.calculatePosition();
@@ -42,7 +42,7 @@ class Obstacle extends Phaser.GameObjects.Sprite {
         if (this.expired && this.timer >= this.delay) {
             this.expired = false;
             this.timer = 0;
-            this.reset();
+            this.reset(gameTimer);
         } else if (this.expired) {
             this.timer += delta;
         }
@@ -62,8 +62,13 @@ class Obstacle extends Phaser.GameObjects.Sprite {
         this.y = newY;
     }
 
-    reset() {
+    reset(gameTimer) {
         let newX = Phaser.Math.Between(this.minStart, this.maxStart);
+        let d = 100 - (gameTimer / 1000);
+        while (d < 0) {
+            d += 100;
+        }
+        this.setDepth(d);
         this.setStartingPosition(newX);
     }
     
