@@ -3,6 +3,18 @@ class Play extends Phaser.Scene {
         super("playScene");
     }
 
+    init() {
+        this.eggPadding = 10; // Egg distance from left side of the screen.
+        this.startingHeight = 9/16; // Player starting location (around the middle).
+        this.minHeight = 1/4; // Highest point the player can be.
+        this.maxHeight = 7/8; // Lowest point the player can be.
+        this.chargeFactor = 1; // The distance of a fully charged teleport is playing field width * chargeFactor.
+        this.chargeTime = 2; // Amount of time (in seconds) to reach max teleport charge (cooling down takes a quarter of the time).
+        this.tpTime = 0.3; // How long a teleport takes in seconds.
+        this.baseMoveSpeed = 0.4; // Starting table rotation speed (scales over time).
+        this.baseEggFrameRate = 5; // Starting egg rolling animation speed (scales over time).
+    }
+
     preload() {
         // Create animations.
         this.anims.create({
@@ -62,8 +74,8 @@ class Play extends Phaser.Scene {
         this.table = this.add.tileSprite(0, 0, 2560, 2560, 'table').setOrigin(0.5, 0.5);
 
         // Add player egg.
-        this.p1Egg = this.physics.add.sprite(eggPadding, game.config.height * startingHeight, 'egg').setOrigin(0, 0).setScale(4);
-        this.eggCharge = this.add.sprite(eggPadding, game.config.height * startingHeight, 'charge').setOrigin(0, 0).setScale(4);
+        this.p1Egg = this.physics.add.sprite(this.eggPadding, game.config.height * this.startingHeight, 'egg').setOrigin(0, 0).setScale(4);
+        this.eggCharge = this.add.sprite(this.eggPadding, game.config.height * this.startingHeight, 'charge').setOrigin(0, 0).setScale(4);
 
         // Define keys.
         keyUP = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
@@ -81,10 +93,10 @@ class Play extends Phaser.Scene {
 
     update(time, delta) {
         // Rotate table tile sprite.
-        this.table.angle += baseMoveSpeed;
+        this.table.angle += this.baseMoveSpeed;
 
         // Animate egg rolling.
-        this.p1Egg.play({key: 'roll', frameRate: baseEggFrameRate}, true);
+        this.p1Egg.play({key: 'roll', frameRate: this.baseEggFrameRate}, true);
         if (!this.chargingTeleport && !this.coolingDown) {
             this.eggCharge.play('unchargedIdle', true);
         }
@@ -108,13 +120,13 @@ class Play extends Phaser.Scene {
             this.eggCharge.setFrame(8);
             this.isTeleporting = true;
             this.hasTeleported = false;
-            this.teleportTimer = tpTime;
+            this.teleportTimer = this.tpTime;
         } else if (this.chargingTeleport && Phaser.Input.Keyboard.JustUp(keyDOWN) && this.tpDirection == 'down') {
             this.chargingTeleport = false;
             this.eggCharge.setFrame(8);
             this.isTeleporting = true;
             this.hasTeleported = false;
-            this.teleportTimer = tpTime;
+            this.teleportTimer = this.tpTime;
         }
 
         if (this.chargingTeleport && this.chargeMeter == 100) {
@@ -125,7 +137,7 @@ class Play extends Phaser.Scene {
         }
 
         if (this.chargingTeleport && this.chargeMeter < 100) {
-            this.chargeMeter += (delta / (chargeTime * 1000)) * 100;
+            this.chargeMeter += (delta / (this.chargeTime * 1000)) * 100;
             if (this.chargeMeter >= 100) {
                 this.chargeMeter = 100;
             }
@@ -133,7 +145,7 @@ class Play extends Phaser.Scene {
             this.eggCharge.setFrame(currentFrame);
         }
         if (this.coolingDown && this.chargeMeter > 0) {
-            this.chargeMeter -= (delta / (chargeTime * 250)) * 100; //TODO
+            this.chargeMeter -= (delta / (this.chargeTime * 250)) * 100; //TODO
             if (this.chargeMeter <= 0) {
                 this.chargeMeter = 0;
             }
@@ -142,7 +154,7 @@ class Play extends Phaser.Scene {
         }
         if (this.isTeleporting) {
             this.teleportTimer -= (delta / 1000);
-            let frameOffset = Math.abs((((tpTime / 2) - this.teleportTimer) / (tpTime / 2)) * 4);
+            let frameOffset = Math.abs((((this.tpTime / 2) - this.teleportTimer) / (this.tpTime / 2)) * 4);
             let currentFrame = Math.ceil(11 - frameOffset);
             this.eggCharge.setFrame(currentFrame);
             if (!this.hasTeleported && currentFrame == 11) {
@@ -161,17 +173,17 @@ class Play extends Phaser.Scene {
 
     getNewPosition(currentY, charge, direction) {
         let finalY = currentY;
-        let maxDistance = (maxHeight - minHeight) * chargeFactor;
+        let maxDistance = (this.maxHeight - this.minHeight) * this.chargeFactor;
         let tpDistance = maxDistance * charge / 100;
         if (direction == 'up') {
             finalY -= tpDistance * game.config.height;
-            if (finalY < (minHeight * game.config.height)) {
-                finalY = minHeight * game.config.height;
+            if (finalY < (this.minHeight * game.config.height)) {
+                finalY = this.minHeight * game.config.height;
             }
         } else if (direction == 'down') {
             finalY += tpDistance * game.config.height;
-            if (finalY > (maxHeight * game.config.height)) {
-                finalY = maxHeight * game.config.height;
+            if (finalY > (this.maxHeight * game.config.height)) {
+                finalY = this.maxHeight * game.config.height;
             }
         }
         return finalY;
