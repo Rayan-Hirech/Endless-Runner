@@ -78,6 +78,7 @@ class Play extends Phaser.Scene {
         keyDOWN = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
 
         // Set up variables.
+        this.gameOver = false;
         this.chargingTeleport = false;
         this.isTeleporting = false;
         this.hasTeleported = false;
@@ -87,29 +88,51 @@ class Play extends Phaser.Scene {
         this.teleportTimer = 0;
 
         // Create obstacles.
-        this.mug01 = new Obstacle(this, this.startingHeight * game.config.width, 0, 'mug', 0, this.baseMoveSpeed/* / 48*/, this.minHeight * game.config.width, this.maxHeight * game.config.width).setOrigin(0, 0).setScale(4);
-        this.mug01.setStartingPosition(this.startingHeight * game.config.width);
+        this.obs01 = new Obstacle(this, this.startingHeight * game.config.width, 0, 'mug', 0, this.baseMoveSpeed, this.minHeight * game.config.width, this.maxHeight * game.config.width).setOrigin(0, 0).setScale(6).setDepth(80);
+        this.obs01.setStartingPosition(this.startingHeight * game.config.width);
+        this.obs02 = new Obstacle(this, this.minHeight * game.config.width, 0, 'mug', 0, this.baseMoveSpeed, this.minHeight * game.config.width, this.maxHeight * game.config.width).setOrigin(0, 0).setScale(6).setDepth(60);
+        this.obs02.setStartingPosition(this.minHeight * game.config.width, -90);
+        this.obs03 = new Obstacle(this, this.maxHeight * game.config.width, 0, 'mug', 0, this.baseMoveSpeed, this.minHeight * game.config.width, this.maxHeight * game.config.width).setOrigin(0, 0).setScale(6).setDepth(40);
+        this.obs03.setStartingPosition(this.maxHeight * game.config.width, -60);
+        this.obs04 = new Obstacle(this, this.startingHeight * game.config.width, 0, 'mug', 0, this.baseMoveSpeed, this.minHeight * game.config.width, this.maxHeight * game.config.width).setOrigin(0, 0).setScale(6).setDepth(20);
+        this.obs04.setStartingPosition(this.startingHeight * game.config.width, -120);
 
         // Add player egg.
-        this.p1Egg = this.physics.add.sprite(this.eggPadding, game.config.height * this.startingHeight, 'egg').setOrigin(0, 0).setScale(4);
-        this.eggCharge = this.add.sprite(this.eggPadding, game.config.height * this.startingHeight, 'charge').setOrigin(0, 0).setScale(4);
+        this.p1Egg = this.physics.add.sprite(this.eggPadding, game.config.height * this.startingHeight, 'egg').setOrigin(0, 0).setScale(4).setDepth(100);
+        this.eggCharge = this.add.sprite(this.eggPadding, game.config.height * this.startingHeight, 'charge').setOrigin(0, 0).setScale(4).setDepth(120);
+        this.p1Egg.body.setSize(this.p1Egg.width * 5/8, this.p1Egg.height * 3/4);
+
+        // Add colliders.
+        this.physics.add.collider(this.p1Egg, this.obs01, () => {this.gameOver = true});
+        this.physics.add.collider(this.p1Egg, this.obs02, () => {this.gameOver = true});
+        this.physics.add.collider(this.p1Egg, this.obs03, () => {this.gameOver = true});
+        this.physics.add.collider(this.p1Egg, this.obs04, () => {this.gameOver = true});
+
     }
 
     update(time, delta) {
-        // Rotate table tile sprite.
-        this.table.angle += this.baseMoveSpeed;
+        if (!this.gameOver) {
+            // Rotate table tile sprite.
+            this.table.angle += this.baseMoveSpeed;
 
-        // Animate egg rolling.
-        this.p1Egg.play({key: 'roll', frameRate: this.baseEggFrameRate}, true);
-        if (!this.chargingTeleport && !this.coolingDown) {
-            this.eggCharge.play('unchargedIdle', true);
+            // Move the obstacles.
+            this.obs01.update(time, delta);
+            this.obs02.update(time, delta);
+            this.obs03.update(time, delta);
+            this.obs04.update(time, delta);
+
+            // Animate egg rolling.
+            this.p1Egg.play({key: 'roll', frameRate: this.baseEggFrameRate}, true);
+            if (!this.chargingTeleport && !this.coolingDown) {
+                this.eggCharge.play('unchargedIdle', true);
+            }
+
+            // Teleport the egg.
+            this.teleportEgg(delta);
+        } else {
+            this.p1Egg.play('crack', false);
+            this.eggCharge.setFrame(0);
         }
-
-        // Teleportat the egg.
-        this.teleportEgg(delta);
-
-        // Move the obstacles.
-        this.mug01.update(time, delta);
     }
 
     // Handles teleportation, charging, and animation.

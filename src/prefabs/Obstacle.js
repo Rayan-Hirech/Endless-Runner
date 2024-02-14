@@ -5,19 +5,25 @@ class Obstacle extends Phaser.GameObjects.Sprite {
 
         // Add object to existing scene.
         scene.add.existing(this);
+        scene.physics.add.existing(this);
+
+        // Configure physics.
+        this.body.setSize(this.width * 3/4, this.height * 7/8);
+        this.body.setOffset(0.5, 2);
+        this.body.setImmovable(true);
 
         // Variables.
         this.startingX = x;
         this.startingY = y;
         this.magnitude = 0;
         this.minAngle = -30;
-        this.maxAngle = 120;
+        this.maxAngle = 150;
         this.theta = this.minAngle;
         this.rotationSpeed = rotationSpeed;
         this.minStart = minStart;
         this.maxStart = maxStart;
-        this.minDelay = 0.5;
-        this.maxDelay = 2;
+        this.minDelay = 1;
+        this.maxDelay = 4;
         this.expired = false;
         this.timer = 0;
         this.delay = 0;
@@ -42,9 +48,9 @@ class Obstacle extends Phaser.GameObjects.Sprite {
         }
     }
 
-    setStartingPosition(x) {
+    setStartingPosition(x, a = this.minAngle) {
         this.magnitude = x;
-        this.theta = this.minAngle;
+        this.theta = a;
         this.calculatePosition();
     }
     
