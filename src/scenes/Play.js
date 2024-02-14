@@ -62,7 +62,7 @@ class Play extends Phaser.Scene {
         this.table = this.add.tileSprite(0, 0, 2560, 2560, 'table').setOrigin(0.5, 0.5);
 
         // Add player egg.
-        this.p1Egg = this.add.sprite(eggPadding, game.config.height * startingHeight, 'egg').setOrigin(0, 0).setScale(4);
+        this.p1Egg = this.physics.add.sprite(eggPadding, game.config.height * startingHeight, 'egg').setOrigin(0, 0).setScale(4);
         this.eggCharge = this.add.sprite(eggPadding, game.config.height * startingHeight, 'charge').setOrigin(0, 0).setScale(4);
 
         // Define keys.
