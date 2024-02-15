@@ -104,10 +104,10 @@ class Play extends Phaser.Scene {
         this.p1Egg.body.setSize(this.p1Egg.width * 5/8, this.p1Egg.height * 3/4);
 
         // Add colliders.
-        this.physics.add.collider(this.p1Egg, this.obs01, () => {this.gameOver = true});
-        this.physics.add.collider(this.p1Egg, this.obs02, () => {this.gameOver = true});
-        this.physics.add.collider(this.p1Egg, this.obs03, () => {this.gameOver = true});
-        this.physics.add.collider(this.p1Egg, this.obs04, () => {this.gameOver = true});
+        this.physics.add.collider(this.p1Egg, this.obs01, () => {this.endGame()});
+        this.physics.add.collider(this.p1Egg, this.obs02, () => {this.endGame()});
+        this.physics.add.collider(this.p1Egg, this.obs03, () => {this.endGame()});
+        this.physics.add.collider(this.p1Egg, this.obs04, () => {this.endGame()});
 
         // Display timer.
         let timerConfig = {
@@ -123,6 +123,28 @@ class Play extends Phaser.Scene {
             fixedWidth: 100
         };
         this.timerDisplay = this.add.text(20, 10, Math.ceil(this.gameTimer / 1000), timerConfig);
+
+        // Add game over screen.
+        this.gameOverScreen = this.add.sprite(0, 0, 'gameOver').setOrigin(0, 0).setDepth(200);
+        this.gameOverScreen.visible = false;
+        this.restartButton = this.add.sprite(game.config.width / 2, game.config.height * 7/8, 'restartButton').setOrigin(0.5, 0.5).setScale(10).setDepth(220).setInteractive();
+        this.restartButton.visible = false;
+        this.restartButton.on('pointerout', () => {
+            if (this.gameOver) {
+                this.restartButton.setFrame(0)
+            }
+        });
+        this.restartButton.on('pointerover', () => {
+            if (this.gameOver) {
+                this.restartButton.setFrame(1)
+            }
+        });
+        this.restartButton.on('pointerdown', () => {
+            if (this.gameOver) {
+                this.restartButton.setFrame(2)
+                this.scene.restart();
+            }
+        });
     }
 
     update(time, delta) {
@@ -149,8 +171,7 @@ class Play extends Phaser.Scene {
             this.gameTimer += delta;
             this.timerDisplay.text = Math.ceil(this.gameTimer / 1000);
         } else {
-            this.p1Egg.play('crack', false);
-            this.eggCharge.setFrame(0);
+            // Game over.
         }
     }
 
@@ -235,5 +256,17 @@ class Play extends Phaser.Scene {
             }
         }
         return finalY;
+    }
+
+    endGame() {
+        this.gameOver = true;
+        this.p1Egg.play('crack', false);
+        this.eggCharge.setFrame(0);
+        this.obs01.destroy();
+        this.obs02.destroy();
+        this.obs03.destroy();
+        this.obs04.destroy();
+        this.gameOverScreen.visible = true;
+        this.restartButton.visible = true;
     }
 }

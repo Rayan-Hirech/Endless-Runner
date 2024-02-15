@@ -21,6 +21,13 @@ class Menu extends Phaser.Scene {
             endFrame: 11
         });
         this.load.image('mug', './assets/sprites/mug.png');
+        this.load.image('gameOver', './assets/screens/gameOver.png');
+        this.load.spritesheet('restartButton', './assets/spritesheets/restartButton.png', {
+            frameWidth: 16,
+            frameHeight: 8,
+            startFrame: 0,
+            endFrame: 2
+        });
     }
 
     create() {
