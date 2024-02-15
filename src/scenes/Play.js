@@ -97,6 +97,10 @@ class Play extends Phaser.Scene {
         this.obs03.setStartingPosition(this.maxHeight * game.config.width, -60);
         this.obs04 = new Obstacle(this, this.startingHeight * game.config.width, 0, 'mug', 0, this.baseMoveSpeed, this.minHeight * game.config.width, this.maxHeight * game.config.width).setOrigin(0, 0).setScale(6).setDepth(1);
         this.obs04.setStartingPosition(this.startingHeight * game.config.width, -120);
+        this.obs05 = new Obstacle(this, this.maxHeight * game.config.width, 0, 'mug', 0, this.baseMoveSpeed * 1.5, this.minHeight * game.config.width, this.maxHeight * game.config.width).setOrigin(0, 0).setScale(6).setDepth(1);
+        this.obs05.setStartingPosition(this.maxHeight * game.config.width);
+        this.obs06 = new Obstacle(this, this.minHeight * game.config.width, 0, 'mug', 0, this.baseMoveSpeed * 2, this.minHeight * game.config.width, this.maxHeight * game.config.width).setOrigin(0, 0).setScale(6).setDepth(1);
+        this.obs06.setStartingPosition(this.minHeight * game.config.width, -60);
 
         // Add player egg.
         this.p1Egg = this.physics.add.sprite(this.eggPadding, game.config.height * this.startingHeight, 'egg').setOrigin(0, 0).setScale(4).setDepth(100);
@@ -108,6 +112,8 @@ class Play extends Phaser.Scene {
         this.physics.add.collider(this.p1Egg, this.obs02, () => {this.endGame()});
         this.physics.add.collider(this.p1Egg, this.obs03, () => {this.endGame()});
         this.physics.add.collider(this.p1Egg, this.obs04, () => {this.endGame()});
+        this.physics.add.collider(this.p1Egg, this.obs05, () => {this.endGame()});
+        this.physics.add.collider(this.p1Egg, this.obs06, () => {this.endGame()});
 
         // Display timer.
         let timerConfig = {
@@ -150,13 +156,19 @@ class Play extends Phaser.Scene {
     update(time, delta) {
         if (!this.gameOver) {
             // Rotate table tile sprite.
-            this.table.angle += this.baseMoveSpeed;
+            this.table.angle += this.baseMoveSpeed * (1 + this.gameTimer / 30000);
 
             // Move the obstacles.
             this.obs01.update(time, delta, this.gameTimer);
             this.obs02.update(time, delta, this.gameTimer);
             this.obs03.update(time, delta, this.gameTimer);
             this.obs04.update(time, delta, this.gameTimer);
+            if (this.gameTimer / 1000 > 15) {
+                this.obs05.update(time, delta, this.gameTimer);
+            }
+            if (this.gameTimer / 1000 > 30) {
+                this.obs06.update(time, delta, this.gameTimer);
+            }
 
             // Animate egg rolling.
             this.p1Egg.play({key: 'roll', frameRate: this.baseEggFrameRate}, true);
@@ -207,7 +219,7 @@ class Play extends Phaser.Scene {
         }
 
         if (this.chargingTeleport && this.chargeMeter < 100) {
-            this.chargeMeter += (delta / (this.chargeTime * 1000)) * 100;
+            this.chargeMeter += (delta / ((this.chargeTime / (1 + this.gameTimer / 30000)) * 1000)) * 100;
             if (this.chargeMeter >= 100) {
                 this.chargeMeter = 100;
             }
@@ -215,7 +227,7 @@ class Play extends Phaser.Scene {
             this.eggCharge.setFrame(currentFrame);
         }
         if (this.coolingDown && this.chargeMeter > 0) {
-            this.chargeMeter -= (delta / (this.chargeTime * 250)) * 100; //TODO
+            this.chargeMeter -= (delta / ((this.chargeTime / (1 + this.gameTimer / 30000)) * 250)) * 100;
             if (this.chargeMeter <= 0) {
                 this.chargeMeter = 0;
             }

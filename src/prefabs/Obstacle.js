@@ -19,11 +19,14 @@ class Obstacle extends Phaser.GameObjects.Sprite {
         this.minAngle = -30;
         this.maxAngle = 150;
         this.theta = this.minAngle;
-        this.rotationSpeed = rotationSpeed;
+        this.baseRotationSpeed = rotationSpeed;
+        this.rotationSpeed = this.baseRotationSpeed
         this.minStart = minStart;
         this.maxStart = maxStart;
-        this.minDelay = 1;
-        this.maxDelay = 4;
+        this.baseMinDelay = 1;
+        this.baseMaxDelay = 4;
+        this.minDelay = this.baseMinDelay;
+        this.maxDelay = this.baseMaxDelay;
         this.expired = false;
         this.timer = 0;
         this.delay = 0;
@@ -70,10 +73,10 @@ class Obstacle extends Phaser.GameObjects.Sprite {
         }
         this.setDepth(d);
         this.setStartingPosition(newX);
-    }
-    
-    updateDelay(newMin, newMax) {
-        this.minDelay = newMin;
-        this.maxDelay = newMax;
+
+        // Scale difficulty with time.
+        this.rotationSpeed = this.baseRotationSpeed * (1 + gameTimer / 30000);
+        this.minDelay = this.baseMinDelay / (1 + (gameTimer / 30000));
+        this.maxDelay = this.baseMaxDelay / (1 + (gameTimer / 30000));
     }
 }
