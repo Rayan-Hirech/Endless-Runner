@@ -1,7 +1,7 @@
 /*
 Name: Rayan Hirech
-Game Title (Working Title): Teleporting Egg
-Hours Spent: 19
+Game Title: Teleport Egg
+Hours Spent: 22
 Creative Tilt:
 */
 
@@ -19,7 +19,7 @@ let config = {
             debug: false
         }
     },
-    scene: [Menu, Play]
+    scene: [Menu, Tutorial, Credits, Play]
 }
 
 let game = new Phaser.Game(config);

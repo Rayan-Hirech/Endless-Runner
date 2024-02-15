@@ -97,9 +97,9 @@ class Play extends Phaser.Scene {
         this.obs03.setStartingPosition(this.maxHeight * game.config.width, -60);
         this.obs04 = new Obstacle(this, this.startingHeight * game.config.width, 0, 'mug', 0, this.baseMoveSpeed, this.minHeight * game.config.width, this.maxHeight * game.config.width).setOrigin(0, 0).setScale(6).setDepth(1);
         this.obs04.setStartingPosition(this.startingHeight * game.config.width, -120);
-        this.obs05 = new Obstacle(this, this.maxHeight * game.config.width, 0, 'mug', 0, this.baseMoveSpeed * 1.5, this.minHeight * game.config.width, this.maxHeight * game.config.width).setOrigin(0, 0).setScale(6).setDepth(1);
+        this.obs05 = new Obstacle(this, this.maxHeight * game.config.width, 0, 'mug', 0, this.baseMoveSpeed, this.minHeight * game.config.width, this.maxHeight * game.config.width, this.baseMoveSpeed * 1.5).setOrigin(0, 0).setScale(6).setDepth(1);
         this.obs05.setStartingPosition(this.maxHeight * game.config.width);
-        this.obs06 = new Obstacle(this, this.minHeight * game.config.width, 0, 'mug', 0, this.baseMoveSpeed * 2, this.minHeight * game.config.width, this.maxHeight * game.config.width).setOrigin(0, 0).setScale(6).setDepth(1);
+        this.obs06 = new Obstacle(this, this.minHeight * game.config.width, 0, 'mug', 0, this.baseMoveSpeed, this.minHeight * game.config.width, this.maxHeight * game.config.width, this.baseMoveSpeed * 2).setOrigin(0, 0).setScale(6).setDepth(1);
         this.obs06.setStartingPosition(this.minHeight * game.config.width, -60);
 
         // Add player egg.
@@ -137,6 +137,14 @@ class Play extends Phaser.Scene {
         this.menuButton.visible = false;
         this.restartButton = new Button(this, game.config.width * 3/4, game.config.height * 7/8, 'restartButton', 0, 10, () => {this.scene.restart()});
         this.restartButton.visible = false;
+
+        // Add teleport charging sound.
+        this.chargeSFX = this.sound.add('chargeUp');
+
+        // Add music.
+        this.music = this.sound.add('music');
+        this.music.loop = true;
+        this.music.play({volume: 0.25});
     }
 
     update(time, delta) {
@@ -175,21 +183,27 @@ class Play extends Phaser.Scene {
     teleportEgg(delta) {
         if (!this.chargingTeleport && !this.isTeleporting && !this.coolingDown && Phaser.Input.Keyboard.JustDown(keyUP)) {
             this.chargingTeleport = true;
+            this.chargeSFX.play();
             this.tpDirection = 'up';
         } else if (!this.chargingTeleport && !this.isTeleporting && !this.coolingDown && Phaser.Input.Keyboard.JustDown(keyDOWN)) {
             this.chargingTeleport = true;
+            this.chargeSFX.play();
             this.tpDirection = 'down';
         }
 
         if (this.chargingTeleport && Phaser.Input.Keyboard.JustUp(keyUP) && this.tpDirection == 'up') {
             this.chargingTeleport = false;
             this.eggCharge.setFrame(8);
+            this.chargeSFX.stop();
+            this.sound.play('warp', {volume: 0.5});
             this.isTeleporting = true;
             this.hasTeleported = false;
             this.teleportTimer = this.tpTime;
         } else if (this.chargingTeleport && Phaser.Input.Keyboard.JustUp(keyDOWN) && this.tpDirection == 'down') {
             this.chargingTeleport = false;
             this.eggCharge.setFrame(8);
+            this.chargeSFX.stop();
+            this.sound.play('warp', {volume: 0.5});
             this.isTeleporting = true;
             this.hasTeleported = false;
             this.teleportTimer = this.tpTime;
@@ -255,15 +269,19 @@ class Play extends Phaser.Scene {
     }
 
     endGame() {
-        this.gameOver = true;
-        this.p1Egg.play('crack', false);
-        this.eggCharge.setFrame(0);
-        this.obs01.destroy();
-        this.obs02.destroy();
-        this.obs03.destroy();
-        this.obs04.destroy();
-        this.gameOverScreen.visible = true;
-        this.menuButton.visible = true;
-        this.restartButton.visible = true;
+        if (!this.gameOver) {
+            this.gameOver = true;
+            this.music.stop();
+            this.sound.play('eggCrack');
+            this.p1Egg.play('crack', false);
+            this.eggCharge.setFrame(0);
+            this.obs01.destroy();
+            this.obs02.destroy();
+            this.obs03.destroy();
+            this.obs04.destroy();
+            this.gameOverScreen.visible = true;
+            this.menuButton.visible = true;
+            this.restartButton.visible = true;
+        }
     }
 }

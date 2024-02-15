@@ -1,6 +1,6 @@
 // Obstacle prefab.
 class Obstacle extends Phaser.GameObjects.Sprite {
-    constructor(scene, x, y, texture, frame, rotationSpeed, minStart, maxStart) {
+    constructor(scene, x, y, texture, frame, rotationSpeed, minStart, maxStart, startingSpeed = -1) {
         super(scene, x, y, texture, frame);
 
         // Add obstacle to existing scene.
@@ -20,7 +20,11 @@ class Obstacle extends Phaser.GameObjects.Sprite {
         this.maxAngle = 150;
         this.theta = this.minAngle;
         this.baseRotationSpeed = rotationSpeed;
-        this.rotationSpeed = this.baseRotationSpeed
+        if (startingSpeed == -1) {
+            this.rotationSpeed = this.baseRotationSpeed;
+        } else {
+            this.rotationSpeed = startingSpeed;
+        }
         this.minStart = minStart;
         this.maxStart = maxStart;
         this.baseMinDelay = 1;

@@ -22,6 +22,7 @@ class Button extends Phaser.GameObjects.Sprite {
         });
         this.on('pointerdown', () => {
             if (this.visible) {
+                this.scene.sound.play('buttonPress');
                 effect()
             }
         });
