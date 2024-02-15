@@ -8,8 +8,8 @@ class Obstacle extends Phaser.GameObjects.Sprite {
         scene.physics.add.existing(this);
 
         // Configure physics.
-        this.body.setSize(this.width * 3/4, this.height * 7/8);
-        this.body.setOffset(0.5, 2);
+        this.body.setSize(this.width * 3/4, this.height * 5/8);
+        this.body.setOffset(0.5, 5.5);
         this.body.setImmovable(true);
 
         // Variables.
