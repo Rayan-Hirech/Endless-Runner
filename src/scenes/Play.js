@@ -147,7 +147,6 @@ class Play extends Phaser.Scene {
         });
         this.restartButton.on('pointerdown', () => {
             if (this.gameOver) {
-                this.restartButton.setFrame(2)
                 this.scene.restart();
             }
         });

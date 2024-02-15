@@ -26,7 +26,7 @@ class Menu extends Phaser.Scene {
             frameWidth: 16,
             frameHeight: 8,
             startFrame: 0,
-            endFrame: 2
+            endFrame: 1
         });
     }
 
