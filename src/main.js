@@ -1,7 +1,7 @@
 /*
 Name: Rayan Hirech
 Game Title (Working Title): Teleporting Egg
-Hours Spent: 18
+Hours Spent: 19
 Creative Tilt:
 */
 
