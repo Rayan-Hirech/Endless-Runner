@@ -133,7 +133,7 @@ class Play extends Phaser.Scene {
         // Add game over screen.
         this.gameOverScreen = this.add.sprite(0, 0, 'gameOver').setOrigin(0, 0).setDepth(200);
         this.gameOverScreen.visible = false;
-        this.menuButton = new Button(this, game.config.width * 1/4, game.config.height * 7/8, 'menuButton', 0, 10, () => {console.log('go to menu')});
+        this.menuButton = new Button(this, game.config.width * 1/4, game.config.height * 7/8, 'menuButton', 0, 10, () => {this.scene.start('menuScene')});
         this.menuButton.visible = false;
         this.restartButton = new Button(this, game.config.width * 3/4, game.config.height * 7/8, 'restartButton', 0, 10, () => {this.scene.restart()});
         this.restartButton.visible = false;
