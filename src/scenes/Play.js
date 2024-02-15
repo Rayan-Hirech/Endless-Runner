@@ -133,23 +133,10 @@ class Play extends Phaser.Scene {
         // Add game over screen.
         this.gameOverScreen = this.add.sprite(0, 0, 'gameOver').setOrigin(0, 0).setDepth(200);
         this.gameOverScreen.visible = false;
-        this.restartButton = this.add.sprite(game.config.width / 2, game.config.height * 7/8, 'restartButton').setOrigin(0.5, 0.5).setScale(10).setDepth(220).setInteractive();
+        this.menuButton = new Button(this, game.config.width * 1/4, game.config.height * 7/8, 'menuButton', 0, 10, () => {console.log('go to menu')});
+        this.menuButton.visible = false;
+        this.restartButton = new Button(this, game.config.width * 3/4, game.config.height * 7/8, 'restartButton', 0, 10, () => {this.scene.restart()});
         this.restartButton.visible = false;
-        this.restartButton.on('pointerout', () => {
-            if (this.gameOver) {
-                this.restartButton.setFrame(0)
-            }
-        });
-        this.restartButton.on('pointerover', () => {
-            if (this.gameOver) {
-                this.restartButton.setFrame(1)
-            }
-        });
-        this.restartButton.on('pointerdown', () => {
-            if (this.gameOver) {
-                this.scene.restart();
-            }
-        });
     }
 
     update(time, delta) {
@@ -181,8 +168,6 @@ class Play extends Phaser.Scene {
             // Update game timer.
             this.gameTimer += delta;
             this.timerDisplay.text = Math.ceil(this.gameTimer / 1000);
-        } else {
-            // Game over.
         }
     }
 
@@ -278,6 +263,7 @@ class Play extends Phaser.Scene {
         this.obs03.destroy();
         this.obs04.destroy();
         this.gameOverScreen.visible = true;
+        this.menuButton.visible = true;
         this.restartButton.visible = true;
     }
 }
