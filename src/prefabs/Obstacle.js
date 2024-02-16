@@ -27,8 +27,8 @@ class Obstacle extends Phaser.GameObjects.Sprite {
         }
         this.minStart = minStart;
         this.maxStart = maxStart;
-        this.baseMinDelay = 1;
-        this.baseMaxDelay = 4;
+        this.baseMinDelay = 2;
+        this.baseMaxDelay = 6;
         this.minDelay = this.baseMinDelay;
         this.maxDelay = this.baseMaxDelay;
         this.expired = false;
@@ -79,8 +79,8 @@ class Obstacle extends Phaser.GameObjects.Sprite {
         this.setStartingPosition(newX);
 
         // Scale difficulty with time.
-        this.rotationSpeed = this.baseRotationSpeed * (1 + gameTimer / 30000);
-        this.minDelay = this.baseMinDelay / (1 + (gameTimer / 30000));
-        this.maxDelay = this.baseMaxDelay / (1 + (gameTimer / 30000));
+        this.rotationSpeed = this.baseRotationSpeed * (1 + gameTimer / 45000);
+        this.minDelay = this.baseMinDelay / (1 + (gameTimer / 45000));
+        this.maxDelay = this.baseMaxDelay / (1 + (gameTimer / 45000));
     }
 }
